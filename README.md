@@ -6,11 +6,11 @@ In this package there is only one function
 scrape_tables(url)
 ```
 
-which lets you scrape for tables wrapped in `<table>` tag and return them in a [Tables.jl](https://github.com/JuliaData/Tables.jl) compatible row-table.
+which lets you scrape for tables wrapped in `<table>` tags and return them in a [Tables.jl](https://github.com/JuliaData/Tables.jl) compatible row-tables in a vector.
 
 By default the function uses `Cascadia.nodeText` to extract the text from each `<td>` node.
 
-However, if you wish to extract more than the text node you may use
+However, if you wish to extract more than the text node you may want to use
 
 ```
 scrape_tables(url, identity)
@@ -18,7 +18,7 @@ scrape_tables(url, identity)
 
 to keep the cells as `Gumbo.HTMLNode`s and do more advanced extraction.
 
-Also, you can put any call into the `cell_transform` argument to do custome transformation of the `<td>` nodes before returning.
+Also, you can put any callable into the `cell_transform` argument to do custome transformation of the `<td>` nodes before returning.
 
 E.g.
 
