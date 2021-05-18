@@ -2,7 +2,9 @@
 
 In this package there is only one function
 
-`scrape_tables(url)`
+```
+scrape_tables(url)
+```
 
 which lets you scrape for tables wrapped in `<table>` tag and return them in a [Tables.jl](https://github.com/JuliaData/Tables.jl) compatible row-table.
 
