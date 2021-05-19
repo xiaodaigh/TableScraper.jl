@@ -18,7 +18,7 @@ scrape_tables(url, identity)
 
 to keep the cells as `Gumbo.HTMLNode`s and do more advanced extraction.
 
-Also, you can put any callable into the `cell_transform` argument to do custome transformation of the `<td>` nodes before returning.
+Also, you can put any callable into the `cell_transform` argument to do custom transformation of the `<td>` nodes before returning.
 
 E.g.
 
