@@ -41,7 +41,7 @@ function scrape_tables(url, cell_transform=nodeText)::Vector{Table}
             response = HTTP.get(url)
         catch e
             println("Error when attempting to get $url. Make you are connected to the internet and the URL is accessible")
-            println(e)
+            raise(e)
         end
 
     # the body is the html content
