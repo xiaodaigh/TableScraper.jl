@@ -28,4 +28,4 @@ scrape_tables(url, cell_transform)
 
 ## Video Tutorial
 
-[Video: Introducing TableScraper.jl - an easy way to scrape WELL-FORMED tables in Julia](https://www.youtube.com/watch?v=Bi1faYTkIGM)
+[![Video: Introducing TableScraper.jl - an easy way to scrape WELL-FORMED tables in Julia](https://img.youtube.com/vi/Bi1faYTkIGM/0.jpg)](https://www.youtube.com/watch?v=Bi1faYTkIGM)
