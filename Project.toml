@@ -1,7 +1,7 @@
 name = "TableScraper"
 uuid = "3d876f86-fca9-45cb-9864-7207416dc431"
 authors = ["ZJ <zhuojia.dai@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"

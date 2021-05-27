@@ -55,8 +55,9 @@ function scrape_tables(url, cell_transform=nodeText)::Vector{Table}
 
     headers = [[] for _ in 1:n_tables]
 
+
     for (header, table_elem) in zip(headers, tables_elems)
-        for header1 in eachmatch(sel"tbody tr th", table_elem)
+        for header1 in eachmatch(sel"tr th", table_elem)
             # check the header span
             if haskey(header1.attributes, "colspan")
                 colspan = parse(Int, header1.attributes["colspan"])
