@@ -11,7 +11,8 @@ include("Tables.jl")
 
 """
     scrape_tables(url)
-    scrape_tables(url, cell_transform)
+    scrape_tables(url, cell_transform[=nodeText])
+    scrape_tables(url, cell_transform[=nodeText], header_transform[=nodeText])
 
 This function will scrape `url` for any WELL-FORMED tables wrapped in `<table>` tags and return
 them in a vector.
@@ -19,11 +20,16 @@ them in a vector.
 # Arguments
 
     - `url`: The URL to look for tables
-    - `cell_transform`: By default, each of the table cells wrapped in `<td>` have transformed by
+    - `cell_transform`: By default, each of the table cells wrapped in `<td>` is transformed by
         the callable (i.e. `Function` or type definition) `cell_transform`. The default
         `cell_transform` is `Cascadia.nodeText` which extracts the node's text. You may wish to use
         `identity` to extract just the cell as a `Gumbo.HTMLNode` type for more advanced processing,
         e.g. `scrape_tables(url, identity)`
+    - `header_transform`: By default, each of the table header wrapped in `<th>` is transformed by
+        the callable (i.e. `Function` or type definition) `header_transform`. The default
+        `header_transform` is `Cascadia.nodeText` which extracts the node's text. You may wish to
+        use `identity` to extract just the cell as a `Gumbo.HTMLNode` type for more advanced
+        processing, e.g. `scrape_tables(url, identity, identity)`
 
 # Return
 
@@ -33,7 +39,7 @@ The `TableScraper.Table` is a Tables.jl-compatible row-accessible type. So you c
 another Tables.jl compatible type if you wish e.g. `DataFrame.(scrape_tables(url))` will return a
 vector of `DataFrame`s
 """
-function scrape_tables(url, cell_transform=nodeText)::Vector{Table}
+function scrape_tables(url, cell_transform=nodeText, header_transform=nodeText)::Vector{Table}
     result_tables = []
 
     response::HTTP.Messages.Response =
@@ -59,13 +65,14 @@ function scrape_tables(url, cell_transform=nodeText)::Vector{Table}
     for (header, table_elem) in zip(headers, tables_elems)
         for header1 in eachmatch(sel"tr th", table_elem)
             # check the header span
-            if haskey(header1.attributes, "colspan")
+            # you are on your won if you don't use nodeText
+            if (nodeText == header_transform) & haskey(header1.attributes, "colspan")
                 colspan = parse(Int, header1.attributes["colspan"])
                 for i in 1:colspan
                     push!(header, nodeText(header1)*"$i")
                 end
             else
-                push!(header, nodeText(header1))
+                push!(header, header_transform(header1))
             end
         end
     end
