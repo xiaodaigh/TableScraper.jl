@@ -18,7 +18,7 @@ end
 
 Tables.istable(::Table)=true
 Tables.rowaccess(::Table)=true
-Tables.columnaccess(::Table)=true
+# Tables.columnaccess(::Table)=false
 Tables.columnnames(t::Table)=t.columnnames
 Tables.rows(t::Table)=t
 
@@ -47,6 +47,11 @@ function Tables.getcolumn(t::TableRow, nm::Symbol)
     col = indexin([string(nm)], tbl.columnnames)[1]
     row[col]
 end
+
+function Tables.getcolumn(t::TableRow, nm::String)
+    Tables.getcolumn(t, Symbol(nm))
+end
+
 
 
 Tables.columnnames(t::TableRow) = getfield(t, :source).columnnames
