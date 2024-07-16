@@ -1,6 +1,6 @@
 # TableScraper.jl
 
-In this package there is only one function
+In this package, there is only one function
 
 ```
 scrape_tables(url)
@@ -29,3 +29,28 @@ scrape_tables(url, cell_transform)
 ## Video Tutorial
 
 [![Video: Introducing TableScraper.jl - an easy way to scrape WELL-FORMED tables in Julia](https://img.youtube.com/vi/Bi1faYTkIGM/0.jpg)](https://www.youtube.com/watch?v=Bi1faYTkIGM)
+
+## Internals
+
+The returned table is TableScraper.Table which is defined as below
+
+```
+struct Table
+    rows
+    columnnames
+end
+```
+
+So if you need to scrape some malformed tables, you can directly manipulate the data as in the below example
+
+```
+url = "https://www.ssa.gov/oact/NOTES/as120/images/LD_fig5.html"
+tbl = only(TableScraper.scrape_tables(url, strip ∘ nodeText))
+
+rows = tbl.rows[3:end]
+header = tbl.rows[2]
+
+df = DataFrame(TableScraper.Table(rows, header))
+```
+
+
