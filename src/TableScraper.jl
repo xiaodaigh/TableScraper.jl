@@ -1,8 +1,8 @@
 module TableScraper
 
-using Gumbo: parsehtml
+import Gumbo
 using Cascadia: @sel_str, nodeText
-import HTTP;
+import HTTP
 
 export scrape_tables
 
@@ -39,58 +39,51 @@ The `TableScraper.Table` is a Tables.jl-compatible row-accessible type. So you c
 another Tables.jl compatible type if you wish e.g. `DataFrame.(scrape_tables(url))` will return a
 vector of `DataFrame`s
 """
-function scrape_tables(url, cell_transform=nodeText, header_transform=nodeText)::Vector{Table}
-    result_tables = []
-
+function scrape_tables(url, args...)::Vector{Table}
     response::HTTP.Messages.Response =
         try
-            response = HTTP.get(url)
+            HTTP.get(url)
         catch e
             println("Error when attempting to get $url. Make you are connected to the internet and the URL is accessible")
             raise(e)
         end
 
     # the body is the html content
-    parsed_html = parsehtml(String(response.body))
+    return scrape_tables(Gumbo.parsehtml(String(response.body)), args...)
+end
 
-
+function scrape_tables(parsed_html::Gumbo.HTMLDocument, args...)::Vector{Table}
     # look for tables in the parsed_html
-    tables_elems = eachmatch(sel"table", parsed_html.root)
+    return [scrape_table(table_elem, args...) for table_elem in eachmatch(sel"table", parsed_html.root)]
+end
 
-    n_tables = length(tables_elems)
-
-    headers = [[] for _ in 1:n_tables]
-
-
-    for (header, table_elem) in zip(headers, tables_elems)
-        for header1 in eachmatch(sel"tr th", table_elem)
-            # check the header span
-            # you are on your won if you don't use nodeText
-            if (nodeText == header_transform) & haskey(header1.attributes, "colspan")
-                colspan = parse(Int, header1.attributes["colspan"])
-                for i in 1:colspan
-                    push!(header, nodeText(header1)*"$i")
-                end
-            else
-                push!(header, header_transform(header1))
+function scrape_table(table_elem::Gumbo.HTMLElement{:table}, cell_transform=nodeText, header_transform=nodeText)::Table
+    header = []
+    for header1 in eachmatch(sel"tr th", table_elem)
+        # check the header span
+        # you are on your own if you don't use nodeText
+        if (nodeText == header_transform) & haskey(header1.attributes, "colspan")
+            colspan = parse(Int, header1.attributes["colspan"])
+            for i in 1:colspan
+                push!(header, nodeText(header1)*"$i")
             end
+        else
+            push!(header, header_transform(header1))
         end
     end
 
-    result_tables = [[] for _ in 1:n_tables]
+    result_arr = []
 
     # parse the tables
     # Fill dataframe with rows from the table
-    for (results_arr, table_elem) in zip(result_tables, tables_elems)
-        for row in eachmatch(sel"tbody tr", table_elem)
-            tds = cell_transform.(eachmatch(sel"td", row))
-            if length(tds) > 0 # likely to be header column so don't add
-                push!(results_arr, tds)
-            end
+    for row in eachmatch(sel"tbody tr", table_elem)
+        tds = cell_transform.(eachmatch(sel"td", row))
+        if length(tds) > 0 # likely to be header column so don't add
+            push!(result_arr, tds)
         end
     end
 
-    [Table(rows, header) for (rows, header) in zip(result_tables, headers)]
+    return Table(result_arr, header)
 end
 
 end
