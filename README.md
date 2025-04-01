@@ -2,7 +2,7 @@
 
 In this package, there is only one function
 
-```
+```julia
 scrape_tables(url)
 ```
 
@@ -12,7 +12,7 @@ By default the function uses `Cascadia.nodeText` to extract the text from each `
 
 However, if you wish to extract more than the text node you may want to use
 
-```
+```julia
 scrape_tables(url, identity)
 ```
 
@@ -22,7 +22,7 @@ Also, you can put any callable into the `cell_transform` argument to do custom t
 
 E.g.
 
-```
+```julia
 scrape_tables(url, cell_transform)
 ```
 
@@ -34,7 +34,7 @@ scrape_tables(url, cell_transform)
 
 The returned table is TableScraper.Table which is defined as below
 
-```
+```julia
 struct Table
     rows
     columnnames
@@ -43,7 +43,7 @@ end
 
 So if you need to scrape some malformed tables, you can directly manipulate the data as in the below example
 
-```
+```julia
 url = "https://www.ssa.gov/oact/NOTES/as120/images/LD_fig5.html"
 tbl = only(TableScraper.scrape_tables(url, strip ∘ nodeText))
 
